@@ -72,6 +72,7 @@ class Kardinal():
         self.yolo_model.to(config.device)
         self.reid_model = siamese.BstCnn()
         self.reid_model.load_state_dict(torch.load(config.reid_models_path, map_location=config.device))
+        self.reid_model.to(config.device)
         self.reid_model.eval()
 
         self.colors = pkl.load(open(config.colors_path, "rb"))
