@@ -164,5 +164,8 @@ class Kardinal():
             
             for person in self.databases:
                 self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
+            
+        else:
+            self.databases.clear()
 
         return img
