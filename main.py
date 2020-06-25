@@ -28,8 +28,7 @@ else:
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
 
-    out = cv2.VideoWriter('datatest/output.mp4', 0x7634706d , 10.0, (frame_width,frame_height))
-    # out = cv2.VideoWriter('datatest/output.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+    out = cv2.VideoWriter('datatest/output.mp4', 0x7634706d , 24.0, (frame_width,frame_height))
 
     if (cap.isOpened()== False): 
         print("Error opening video stream or file")
