@@ -36,7 +36,8 @@ else:
     while(cap.isOpened()):
         ret, frame = cap.read()
         if ret == True:
-            img = kardinal.detected(frame)
+            curr_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
+            img = kardinal.detected(frame, curr_frame)
             out.write(img)
             # cv2.imshow('Frame', img)
             if cv2.waitKey(25) & 0xFF == ord('q'):

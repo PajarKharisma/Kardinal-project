@@ -28,11 +28,12 @@ class config():
     nms_thresh = 0.4
 
 class PersonId():
-    def __init__(self, label='', tensor=None, color=None, bbox=None):
+    def __init__(self, label='', tensor=None, color=None, bbox=None, frame=1):
         self.label = label
         self.tensor = tensor
         self.color = color
         self.bbox = bbox
+        self.frame = frame
 
     def set_label(self, label):
         self.label = label
@@ -46,6 +47,9 @@ class PersonId():
     def set_bbox(self, bbox):
         self.bbox = bbox
 
+    def set_frame(self, frame):
+        self.frame = frame
+
     def get_label(self):
         return self.label
     
@@ -57,6 +61,9 @@ class PersonId():
 
     def get_bbox(self):
         return self.bbox
+
+    def get_frame(self):
+        return self.frame
 
     def get_dist(self, tensor2):
         euclidean_distance = F.pairwise_distance(self.tensor, tensor2)
@@ -119,8 +126,8 @@ class Kardinal():
 
         return imgs
 
-    def detected(self, img):
-        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    def detected(self, img, curr_frame):
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img_tensors = cv_image2tensor(img, self.input_size)
         img_tensors = Variable(img_tensors).to(config.device)
 
@@ -139,18 +146,25 @@ class Kardinal():
                 tensor_out = self.reid_model.forward_once(tensor_in).cpu()
                 if len(self.databases) < 1:
                     color = random.choice(self.colors)
-                    person_id = PersonId(label='Person '+str(i+1), tensor=tensor_out, color=color, bbox=img_crop['bbox'])
+                    person_id = PersonId(
+                        label='Person '+str(i+1),
+                        tensor=tensor_out,
+                        color=color,
+                        bbox=img_crop['bbox'],
+                        frame=curr_frame
+                    )
                     self.databases.append(person_id)
                 else:
                     min_dist = sys.float_info.max
                     sim_person = None
                     for person in self.databases:
                         dist = person.get_dist(tensor_out)
-                        if dist <= config.reid_thresh and dist < min_dist:
+                        if dist <= config.reid_thresh and dist < min_dist and curr_frame != person.get_frame:
                             min_dist = dist
                             sim_person = person
                             sim_person.set_bbox(img_crop['bbox'])
                             sim_person.set_tensor(tensor_out)
+                            sim_person.set_frame(curr_frame)
 
                     if sim_person is not None:
                         for person in self.databases:
@@ -159,7 +173,13 @@ class Kardinal():
                                 break
                     else:
                         color = random.choice(self.colors)
-                        new_person = PersonId(label='Person '+str(len(self.databases)+1), tensor=tensor_out, color=color, bbox=img_crop['bbox'])
+                        new_person = PersonId(
+                            label='Person '+str(len(self.databases)+1),
+                            tensor=tensor_out,
+                            color=color,
+                            bbox=img_crop['bbox'],
+                            frame=curr_frame
+                        )
                         self.databases.append(new_person)
             
             for person in self.databases:
@@ -168,4 +188,5 @@ class Kardinal():
         else:
             self.databases.clear()
 
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         return img
