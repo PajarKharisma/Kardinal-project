@@ -150,6 +150,7 @@ class Kardinal():
                             min_dist = dist
                             sim_person = person
                             sim_person.set_bbox(img_crop['bbox'])
+                            sim_person.set_tensor(tensor_out)
 
                     if sim_person is not None:
                         for person in self.databases:
