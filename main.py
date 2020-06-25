@@ -1,9 +1,15 @@
+import sys
 import cv2
 import kardinal as krd
 import torchvision.transforms as transforms
 
-kardinal = krd.Kardinal()
+
+start_time = time.time()
+sys.stdout.write('Process...\n')
+sys.stdout.flush()
+
 mode = 1
+kardinal = krd.Kardinal()
 
 if mode == 0:
     trans = transforms.Compose([transforms.ToTensor()])
@@ -36,3 +42,7 @@ else:
             break
     cap.release()
     cv2.destroyAllWindows()
+
+elapsed_time = time.time() - start_time
+sys.stdout.write(time.strftime("Finish in %H:%M:%S", time.gmtime(elapsed_time)))
+sys.stdout.flush()
