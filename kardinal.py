@@ -69,6 +69,7 @@ class Kardinal():
     def __init__(self, obj_thresh=config.obj_thresh, nms_thresh=config.nms_thresh):
         self.yolo_model = darknet.Darknet(config.yolo_cfg_path)
         self.yolo_model.load_weights(config.yolo_models_path)
+        self.yolo_model.to(config.device)
         self.reid_model = siamese.BstCnn()
         self.reid_model.load_state_dict(torch.load(config.reid_models_path, map_location=config.device))
         self.reid_model.eval()
@@ -122,7 +123,7 @@ class Kardinal():
         img_tensors = cv_image2tensor(img, self.input_size)
         img_tensors = Variable(img_tensors).to(config.device)
 
-        detections = self.yolo_model(img_tensors, config.cuda).to(config.device)
+        detections = self.yolo_model(img_tensors, config.cuda).cpu()
         detections = process_result(detections, self.obj_thresh, self.nms_thresh)
 
         if len(detections) > 0:
