@@ -131,7 +131,7 @@ class Kardinal():
             detections = transform_result(detections, [img], self.input_size)
             imgs = self.crop_img(img, detections)
             for i, img_crop in enumerate(imgs):
-                img_crop['img'] = cv2.resize(img_crop['img'], (60,160))
+                img_crop['img'] = cv2.resize(img_crop['img'], (64,128))
 
                 tensor_in = cv_image2tensor(img_crop['img'], self.input_size)
                 tensor_in = Variable(tensor_in).to(config.device)
