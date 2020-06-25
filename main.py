@@ -3,7 +3,7 @@ import kardinal as krd
 import torchvision.transforms as transforms
 
 kardinal = krd.Kardinal()
-mode = 0
+mode = 1
 
 if mode == 0:
     trans = transforms.Compose([transforms.ToTensor()])
