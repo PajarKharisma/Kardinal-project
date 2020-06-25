@@ -26,7 +26,7 @@ if mode == 0:
 else:
     cap = cv2.VideoCapture('datatest/hasil.mp4')
     codec = cv2.VideoWriter_fourcc(*"MJPG")
-    writer = cv2.VideoWriter("datatest/output.avi", codec, 24,(640,480))
+    out = cv2.VideoWriter("datatest/output.avi", codec, 24,(640,480))
 
     if (cap.isOpened()== False): 
         print("Error opening video stream or file")
