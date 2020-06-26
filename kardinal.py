@@ -140,7 +140,7 @@ class Kardinal():
             imgs = self.crop_img(img, detections)
 
             for i, img_crop in enumerate(imgs):
-                cv2.imwrite('crop/'+str(uuid.uuid4().hex)+'.jpg')
+                cv2.imwrite('crop/'+str(uuid.uuid4().hex)+'.jpg', img_crop['img'])
             '''
             for i, img_crop in enumerate(imgs):
                 img_crop['img'] = cv2.resize(img_crop['img'], (64,128))
