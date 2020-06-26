@@ -17,7 +17,7 @@ import nnArch.basic_siamese as basic_siamese
 class config():
     yolo_cfg_path = 'config/yolov3.cfg'
     yolo_models_path = 'models/yolov3.weights'
-    reid_models_path = 'models/re-id-old.pth'
+    reid_models_path = 'models/re-id.pth'
     class_names_path = 'config/coco.names'
     colors_path = 'config/pallete'
 
