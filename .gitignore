@@ -2,3 +2,4 @@
 /models/*.weights
 /datatest
 /save_video.py
+/crop/*jpg
