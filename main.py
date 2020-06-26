@@ -20,7 +20,7 @@ if mode == 0:
 
     kardinal = krd.Kardinal()
     img = kardinal.detected(img,1)
-    cv2.imread('result.jpg', img)
+    cv2.imwrite('result.jpg', img)
     # cv2.imshow('result', img)
     # cv2.waitKey(0)
 
