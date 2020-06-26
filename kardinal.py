@@ -187,11 +187,9 @@ class Kardinal():
                             frame=curr_frame
                         )
                         self.databases.append(new_person)
-        else:
-            self.databases.clear()
 
         for person in self.databases:
-                self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
+            self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         return img
