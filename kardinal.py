@@ -160,7 +160,7 @@ class Kardinal():
                         frame=curr_frame
                     )
                     self.databases.append(person_id)
-                    self.databases.append(person_id)
+                    self.curr_databases.append(person_id)
                 else:
                     min_dist = sys.float_info.max
                     sim_person = None
@@ -190,7 +190,7 @@ class Kardinal():
                             frame=curr_frame
                         )
                         self.databases.append(new_person)
-                        self.databases.append(new_person)
+                        self.curr_databases.append(new_person)
 
         for person in self.curr_databases:
             self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
