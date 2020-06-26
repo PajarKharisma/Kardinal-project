@@ -7,6 +7,7 @@ import pickle as pkl
 import cv2
 import numpy as np
 import random
+import uuid
 from util import process_result, load_images, resize_image, cv_image2tensor, transform_result
 
 import nnArch.darknet as darknet
@@ -137,6 +138,10 @@ class Kardinal():
         if len(detections) > 0:
             detections = transform_result(detections, [img], self.input_size)
             imgs = self.crop_img(img, detections)
+
+            for i, img_crop in enumerate(imgs):
+                cv2.imwrite('crop/'+str(uuid.uuid4().hex)+'.jpg')
+            '''
             for i, img_crop in enumerate(imgs):
                 img_crop['img'] = cv2.resize(img_crop['img'], (64,128))
                 tensor_in = cv_image2tensor(img_crop['img'], self.input_size)
@@ -190,3 +195,4 @@ class Kardinal():
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         return img
+        '''
