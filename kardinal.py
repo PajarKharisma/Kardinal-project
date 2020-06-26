@@ -91,6 +91,7 @@ class Kardinal():
         self.nms_thresh = nms_thresh
 
         self.databases = []
+        self.curr_databases = []
 
     def load_classes(self, namesfile):
         fp = open(namesfile, "r")
@@ -128,6 +129,7 @@ class Kardinal():
         return imgs
 
     def detected(self, img, curr_frame):
+        self.curr_databases.clear()
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img_tensors = cv_image2tensor(img, self.input_size)
         img_tensors = Variable(img_tensors).to(config.device)
@@ -158,6 +160,7 @@ class Kardinal():
                         frame=curr_frame
                     )
                     self.databases.append(person_id)
+                    self.databases.append(person_id)
                 else:
                     min_dist = sys.float_info.max
                     sim_person = None
@@ -187,8 +190,9 @@ class Kardinal():
                             frame=curr_frame
                         )
                         self.databases.append(new_person)
+                        self.databases.append(new_person)
 
-        for person in self.databases:
+        for person in self.curr_databases:
             self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
