@@ -53,7 +53,6 @@ def process_result(detection, obj_threshhold, nms_threshhold):
             final_output.append(out)
 
     final_output = torch.stack(final_output)
-    print(final_output)
     return final_output
 
 def to_corner(bboxes):
