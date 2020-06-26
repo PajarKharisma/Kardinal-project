@@ -41,13 +41,20 @@ def process_result(detection, obj_threshhold, nms_threshhold):
                     bboxes_cls = torch.cat([bboxes_cls[:boxi+1], bboxes_cls[boxi+1:][ious < nms_threshhold]])
                     boxi += 1
 
+
                 # add batch index as the first attribute
                 batch_idx_add = torch.full((bboxes_cls.size(0), 1), batchi)
                 bboxes_cls = torch.cat((batch_idx_add, bboxes_cls), dim=1)
                 output = torch.cat((output, bboxes_cls))
 
-    # print(output)
-    return output
+    final_output = []
+    for i,out in enumerate(output):
+        if out[5] > 0.85:
+            final_output.append(out)
+
+    final_output = torch.stack(final_output)
+    print(final_output)
+    return final_output
 
 def to_corner(bboxes):
     newbboxes = bboxes.clone()

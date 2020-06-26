@@ -14,7 +14,7 @@ kardinal = krd.Kardinal()
 
 if mode == 0:
     # trans = transforms.Compose([transforms.ToTensor()])
-    img = cv2.imread('datatest/hasil.jpg')
+    img = cv2.imread('datatest/dua.jpg')
     # img = trans(img)
     # print(img.shape)
     img = kardinal.yolov3(img)
@@ -36,8 +36,8 @@ else:
         ret, frame = cap.read()
         if ret == True:
             curr_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
-            # img = kardinal.yolov3(frame)
-            img = kardinal.detected(frame, curr_frame)
+            img = kardinal.yolov3(frame)
+            # img = kardinal.detected(frame, curr_frame)
             out.write(img)
             # cv2.imshow('Frame', img)
             if cv2.waitKey(25) & 0xFF == ord('q'):

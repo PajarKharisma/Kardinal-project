@@ -25,8 +25,8 @@ class config():
     cuda = True if torch.cuda.is_available() else False
 
     reid_thresh = 0.55
-    obj_thresh = 0.4
-    nms_thresh = 0.6
+    obj_thresh = 0.5
+    nms_thresh = 0.4
 
 class PersonId():
     def __init__(self, label='', tensor=None, color=None, bbox=None, frame=1):
@@ -128,7 +128,7 @@ class Kardinal():
         return imgs
 
     def detected(self, img, curr_frame):
-        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img_tensors = cv_image2tensor(img, self.input_size)
         img_tensors = Variable(img_tensors).to(config.device)
 
