@@ -176,7 +176,7 @@ class Kardinal():
                         for person in self.databases:
                             if person.get_label() == sim_person.get_label():
                                 person = sim_person
-                                self.curr_databases(person)
+                                self.curr_databases.append(person)
                                 break
                     else:
                         color = random.choice(self.colors)
