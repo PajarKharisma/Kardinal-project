@@ -160,9 +160,9 @@ class Kardinal():
                         dist = person.get_dist(tensor_out)
                         if curr_frame != person.get_frame and dist <= config.reid_thresh and dist < min_dist:
                             min_dist = dist
-                            sim_person = PersonId()
-                            sim_person.set_label(person.get_label())
-                            sim_person.set_color(person.get_color())
+                            sim_person = person
+                            # sim_person.set_label(person.get_label())
+                            # sim_person.set_color(person.get_color())
                             sim_person.set_bbox(img_crop['bbox'])
                             sim_person.set_tensor(tensor_out)
                             sim_person.set_frame(curr_frame)
@@ -182,12 +182,11 @@ class Kardinal():
                             frame=curr_frame
                         )
                         self.databases.append(new_person)
-            
-            for person in self.databases:
-                self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
-            
         else:
             self.databases.clear()
+
+        for person in self.databases:
+                self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         return img
