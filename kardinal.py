@@ -23,7 +23,7 @@ class config():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     cuda = True if torch.cuda.is_available() else False
 
-    reid_thresh = 0.55
+    reid_thresh = 0.4
     obj_thresh = 0.5
     nms_thresh = 0.4
 
@@ -139,6 +139,7 @@ class Kardinal():
             imgs = self.crop_img(img, detections)
             for i, img_crop in enumerate(imgs):
                 img_crop['img'] = cv2.resize(img_crop['img'], (64,128))
+                cv2.imshow(str(i), img_crop['img'])
 
                 tensor_in = cv_image2tensor(img_crop['img'], self.input_size)
                 tensor_in = Variable(tensor_in).to(config.device)
@@ -159,9 +160,11 @@ class Kardinal():
                     sim_person = None
                     for person in self.databases:
                         dist = person.get_dist(tensor_out)
-                        if dist <= config.reid_thresh and dist < min_dist and curr_frame != person.get_frame:
+                        if curr_frame != person.get_frame and dist <= config.reid_thresh and dist < min_dist:
                             min_dist = dist
-                            sim_person = person
+                            sim_person = PersonId()
+                            sim_person.set_label(person.get_label())
+                            sim_person.set_color(person.get_color())
                             sim_person.set_bbox(img_crop['bbox'])
                             sim_person.set_tensor(tensor_out)
                             sim_person.set_frame(curr_frame)
@@ -189,4 +192,5 @@ class Kardinal():
             self.databases.clear()
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        cv2.waitKey(0)
         return img
