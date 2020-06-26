@@ -12,12 +12,13 @@ from util import process_result, load_images, resize_image, cv_image2tensor, tra
 
 import nnArch.darknet as darknet
 import nnArch.siamese as siamese
+import nnArch.multipart as multipart
 import nnArch.basic_siamese as basic_siamese
 
 class config():
     yolo_cfg_path = 'config/yolov3.cfg'
     yolo_models_path = 'models/yolov3.weights'
-    reid_models_path = 'models/re-id.pth'
+    reid_models_path = 'models/multipart-compact.pth'
     class_names_path = 'config/coco.names'
     colors_path = 'config/pallete'
 
@@ -78,7 +79,8 @@ class Kardinal():
         self.yolo_model = darknet.Darknet(config.yolo_cfg_path)
         self.yolo_model.load_weights(config.yolo_models_path)
         self.yolo_model.to(config.device)
-        self.reid_model = siamese.BstCnn()
+
+        self.reid_model = multipart.McbCnn()
         self.reid_model.load_state_dict(torch.load(config.reid_models_path, map_location=config.device))
         self.reid_model.to(config.device)
         self.reid_model.eval()
@@ -142,7 +144,7 @@ class Kardinal():
             imgs = self.crop_img(img, detections)
 
             for i, img_crop in enumerate(imgs):
-                img_crop['img'] = cv2.resize(img_crop['img'], (64, 128))
+                img_crop['img'] = cv2.resize(img_crop['img'], (60, 160))
                 tensor_in = cv_image2tensor(img_crop['img'], self.input_size)
                 tensor_in = Variable(tensor_in).to(config.device)
 
