@@ -46,6 +46,7 @@ def process_result(detection, obj_threshhold, nms_threshhold):
                 bboxes_cls = torch.cat((batch_idx_add, bboxes_cls), dim=1)
                 output = torch.cat((output, bboxes_cls))
 
+    # print(output)
     return output
 
 def to_corner(bboxes):

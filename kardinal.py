@@ -109,7 +109,7 @@ class Kardinal():
 
         # kotak text
         cv2.rectangle(img, p3, p4, color, -1)
-        cv2.putText(img, label, p1, cv2.FONT_HERSHEY_SIMPLEX, 1, [225, 255, 255], 1)
+        cv2.putText(img, label, p1, cv2.FONT_HERSHEY_SIMPLEX, 1, [0, 0, 0], 1)
 
     def crop_img(self, img, bboxs):
         imgs = []
@@ -141,7 +141,7 @@ class Kardinal():
 
             for i, img_crop in enumerate(imgs):
                 cv2.imwrite('crop/'+str(uuid.uuid4().hex)+'.jpg', img_crop['img'])
-            '''
+            
             for i, img_crop in enumerate(imgs):
                 img_crop['img'] = cv2.resize(img_crop['img'], (64,128))
                 tensor_in = cv_image2tensor(img_crop['img'], self.input_size)
@@ -195,4 +195,18 @@ class Kardinal():
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         return img
-        '''
+
+    def yolov3(self, img):
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img_tensors = cv_image2tensor(img, self.input_size)
+        img_tensors = Variable(img_tensors).to(config.device)
+
+        detections = self.yolo_model(img_tensors, config.cuda).cpu()
+        detections = process_result(detections, self.obj_thresh, self.nms_thresh)
+
+        if len(detections) > 0:
+            detections = transform_result(detections, [img], self.input_size)
+            for detection in detections:
+                self.draw_bbox(img, detection, (255,255,255), 'orang')
+        
+        return img
