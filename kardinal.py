@@ -142,10 +142,7 @@ class Kardinal():
             imgs = self.crop_img(img, detections)
 
             for i, img_crop in enumerate(imgs):
-                cv2.imwrite('crop/'+str(uuid.uuid4().hex)+'.jpg', img_crop['img'])
-            
-            for i, img_crop in enumerate(imgs):
-                img_crop['img'] = cv2.resize(img_crop['img'], (64,128))
+                img_crop['img'] = cv2.resize(img_crop['img'], (60,160))
                 tensor_in = cv_image2tensor(img_crop['img'], self.input_size)
                 tensor_in = Variable(tensor_in).to(config.device)
 
@@ -179,6 +176,7 @@ class Kardinal():
                         for person in self.databases:
                             if person.get_label() == sim_person.get_label():
                                 person = sim_person
+                                self.curr_databases(person)
                                 break
                     else:
                         color = random.choice(self.colors)
@@ -192,8 +190,8 @@ class Kardinal():
                         self.databases.append(new_person)
                         self.curr_databases.append(new_person)
 
-        for person in self.curr_databases:
-            self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
+            for person in self.curr_databases:
+                self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         return img
