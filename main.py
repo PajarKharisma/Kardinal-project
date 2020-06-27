@@ -9,18 +9,18 @@ start_time = time.time()
 sys.stdout.write('Process...\n')
 sys.stdout.flush()
 
-mode = 1
+mode = 0
 kardinal = krd.Kardinal()
 
 if mode == 0:
     # trans = transforms.Compose([transforms.ToTensor()])
-    img = cv2.imread('datatest/dua.jpg')
+    img = cv2.imread('datatest/hasil.jpg')
     # img = trans(img)
     # print(img.shape)
     img = kardinal.yolov3(img)
-    # cv2.imwrite('result.jpg', img)
-    cv2.imshow('result', img)
-    cv2.waitKey(0)
+    cv2.imwrite('result.jpg', img)
+    # cv2.imshow('result', img)
+    # cv2.waitKey(0)
 
 else:
     cap = cv2.VideoCapture('datatest/hasil.mp4')
