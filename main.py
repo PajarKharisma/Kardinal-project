@@ -36,7 +36,7 @@ else:
         ret, frame = cap.read()
         if ret == True:
             curr_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
-            print('Frame : ',curr_frame)
+            # print('Frame : ',curr_frame)
             # img = kardinal.yolov3(frame)
             img = kardinal.detected(frame, curr_frame)
             out.write(img)
