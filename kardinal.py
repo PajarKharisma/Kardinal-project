@@ -134,8 +134,8 @@ class Kardinal():
     def get_dist(self, input1, input2):
         # print(input1)
         # print(input2)
-        tensor1 = torch.from_numpy(input1).to(config.device)
-        tensor2 = torch.from_numpy(input2).to(config.device)
+        tensor1 = torch.from_numpy(input1)
+        tensor2 = torch.from_numpy(input2)
         
         euclidean_distance = F.pairwise_distance(tensor1, tensor2)
         d = float(euclidean_distance.item())
