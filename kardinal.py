@@ -128,9 +128,10 @@ class Kardinal():
 
         return imgs
 
-    def get_dist(self, tensor1, tensor2):
-        tensor1 = torch.tensor(tensor1)
-        tensor2 = torch.tensor(tensor2)
+    def get_dist(self, input1, input2):
+        tensor1 = torch.from_numpy(input1)
+        tensor2 = torch.from_numpy(input2)
+        
         euclidean_distance = F.pairwise_distance(tensor1, tensor2)
         d = float(euclidean_distance.item())
         d = abs((1 / (1 + d)) - 1)
