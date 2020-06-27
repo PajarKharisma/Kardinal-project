@@ -129,6 +129,8 @@ class Kardinal():
         return imgs
 
     def get_dist(self, input1, input2):
+        print(input1)
+        print(input2)
         tensor1 = torch.from_numpy(input1)
         tensor2 = torch.from_numpy(input2)
         
