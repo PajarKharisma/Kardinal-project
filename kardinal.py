@@ -140,7 +140,8 @@ class Kardinal():
         img_tensors = cv_image2tensor(img, self.input_size)
         img_tensors = Variable(img_tensors).to(config.device)
 
-        detections = self.yolo_model(img_tensors, config.cuda).cpu()
+        detections = self.yolo_model(img_tensors, config.cuda)
+        detections = detections.to('cpu')
         detections = process_result(detections, self.obj_thresh, self.nms_thresh)
 
         if len(detections) > 0:
@@ -152,8 +153,9 @@ class Kardinal():
                 tensor_in = cv_image2tensor(img_crop['img'], self.input_size)
                 tensor_in = Variable(tensor_in).to(config.device)
 
-                # with torch.no_grad():
-                tensor_out = self.reid_model.forward_once(tensor_in).cpu()
+                with torch.no_grad():
+                    tensor_out = self.reid_model.forward_once(tensor_in)
+                    tensor_out = Variable(tensor_out).to('cpu')
 
                 if len(self.databases) < 1:
                     color = random.choice(self.colors)
