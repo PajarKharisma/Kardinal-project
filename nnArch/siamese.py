@@ -40,19 +40,25 @@ class BstCnn(nn.Module):
 
         self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
 
-        self.avgpool = nn.AdaptiveAvgPool2d((32, 16))
+        self.avgpool = nn.AdaptiveAvgPool2d((40, 15))
 
         self.fc = nn.Sequential(
-            nn.Linear(16*32*16, 4096),
+            nn.Linear(16*40*15, 4096),
             nn.ReLU(inplace=True),
-            # nn.Dropout(p=0.2),
+            nn.Dropout(p=0.2),
             
             nn.Linear(4096, 2048),
             nn.ReLU(inplace=True),
-            # nn.Dropout(p=0.2),
-            
+            nn.Dropout(p=0.2),
+
             nn.Linear(2048, 1024),
-            nn.Sigmoid()
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.2),
+            
+            nn.Linear(1024, 512),
+            nn.ReLU(inplace=True)
+            # nn.Softmax(dim=1)
+            # nn.Sigmoid()
         )
 
         self._initialize_weights()
@@ -83,7 +89,7 @@ class BstCnn(nn.Module):
             return output1, output2
         else:
             output3 = self.forward_once(input3)
-            return output1, output2, output3        
+            return output1, output2, output3
 
     def _initialize_weights(self):
         for m in self.modules():
