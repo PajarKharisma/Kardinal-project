@@ -141,7 +141,7 @@ class Kardinal():
         img_tensors = Variable(img_tensors).to(config.device)
 
         detections = self.yolo_model(img_tensors, config.cuda).cpu()
-        del img_tensors
+        # del img_tensors
         detections = process_result(detections, self.obj_thresh, self.nms_thresh)
 
         if len(detections) > 0:
@@ -157,55 +157,55 @@ class Kardinal():
                     tensor_out = self.reid_model.forward_once(tensor_in).cpu()
                     # print('tensor_out : ',tensor_out.type())
 
-                if len(self.databases) < 1:
-                    color = random.choice(self.colors)
-                    person_id = PersonId(
-                        label='Person '+str(i+1),
-                        tensor=tensor_out,
-                        color=color,
-                        bbox=img_crop['bbox'],
-                        frame=curr_frame
-                    )
-                    self.databases.append(person_id)
-                    self.curr_databases.append(person_id)
-                else:
-                    min_dist = sys.float_info.max
-                    sim_person = None
-                    for person in self.databases:
-                        dist = person.get_dist(tensor_out)
-                        if curr_frame != person.get_frame and dist <= config.reid_thresh and dist < min_dist:
-                            min_dist = dist
-                            sim_person = person
-                            # sim_person.set_label(person.get_label())
-                            # sim_person.set_color(person.get_color())
-                            sim_person.set_bbox(img_crop['bbox'])
-                            sim_person.set_tensor(tensor_out)
-                            sim_person.set_frame(curr_frame)
+                # if len(self.databases) < 1:
+                #     color = random.choice(self.colors)
+                #     person_id = PersonId(
+                #         label='Person '+str(i+1),
+                #         tensor=tensor_out,
+                #         color=color,
+                #         bbox=img_crop['bbox'],
+                #         frame=curr_frame
+                #     )
+                #     self.databases.append(person_id)
+                #     self.curr_databases.append(person_id)
+                # else:
+                #     min_dist = sys.float_info.max
+                #     sim_person = None
+                #     for person in self.databases:
+                #         dist = person.get_dist(tensor_out)
+                #         if curr_frame != person.get_frame and dist <= config.reid_thresh and dist < min_dist:
+                #             min_dist = dist
+                #             sim_person = person
+                #             # sim_person.set_label(person.get_label())
+                #             # sim_person.set_color(person.get_color())
+                #             sim_person.set_bbox(img_crop['bbox'])
+                #             sim_person.set_tensor(tensor_out)
+                #             sim_person.set_frame(curr_frame)
 
-                    if sim_person is not None:
-                        for person in self.databases:
-                            if person.get_label() == sim_person.get_label():
-                                person = sim_person
-                                self.curr_databases.append(person)
-                                break
-                    else:
-                        color = random.choice(self.colors)
-                        new_person = PersonId(
-                            label='Person '+str(len(self.databases)+1),
-                            tensor=tensor_out,
-                            color=color,
-                            bbox=img_crop['bbox'],
-                            frame=curr_frame
-                        )
-                        self.databases.append(new_person)
-                        self.curr_databases.append(new_person)
+                #     if sim_person is not None:
+                #         for person in self.databases:
+                #             if person.get_label() == sim_person.get_label():
+                #                 person = sim_person
+                #                 self.curr_databases.append(person)
+                #                 break
+                #     else:
+                #         color = random.choice(self.colors)
+                #         new_person = PersonId(
+                #             label='Person '+str(len(self.databases)+1),
+                #             tensor=tensor_out,
+                #             color=color,
+                #             bbox=img_crop['bbox'],
+                #             frame=curr_frame
+                #         )
+                #         self.databases.append(new_person)
+                #         self.curr_databases.append(new_person)
 
-            for person in self.curr_databases:
-                self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
+            # for person in self.curr_databases:
+            #     self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
-        # del img_tensors
+        del img_tensors
         del tensor_in
         del tensor_out
         del detections
