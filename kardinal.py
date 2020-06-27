@@ -141,7 +141,7 @@ class Kardinal():
         img_tensors = cv_image2tensor(img, self.input_size)
         # img_tensors = Variable(img_tensors).to(config.device)
 
-        detections = self.yolo_model(img_tensors, config.cuda).cpu()
+        detections = self.yolo_model(img_tensors, False).cpu()
         # print('detections : ',detections.type())
         detections = process_result(detections, self.obj_thresh, self.nms_thresh)
 
