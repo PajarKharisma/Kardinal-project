@@ -136,13 +136,11 @@ class Kardinal():
 
     def detected(self, img, curr_frame):
         self.curr_databases.clear()
-        torch.cuda.empty_cache()
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img_tensors = cv_image2tensor(img, self.input_size)
         img_tensors = Variable(img_tensors).to(config.device)
 
         detections = self.yolo_model(img_tensors, config.cuda).cpu()
-        # print('detections : ',detections.type())
         detections = process_result(detections, self.obj_thresh, self.nms_thresh)
 
         if len(detections) > 0:
@@ -205,6 +203,13 @@ class Kardinal():
                 self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+        del img_tensors
+        del tensor_in
+        del tensor_out
+        del detections
+        torch.cuda.empty_cache()
+
         return img
 
     def yolov3(self, img):
