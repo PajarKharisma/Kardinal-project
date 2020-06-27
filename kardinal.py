@@ -71,13 +71,6 @@ class PersonId():
     def get_frame(self):
         return self.frame
 
-    def get_dist(self, tensor2):
-        euclidean_distance = F.pairwise_distance(self.tensor, tensor2)
-        d = float(euclidean_distance.item())
-        d = abs((1 / (1 + d)) - 1)
-
-        return d
-
 class Kardinal():
     def __init__(self, obj_thresh=config.obj_thresh, nms_thresh=config.nms_thresh):
         self.yolo_model = darknet.Darknet(config.yolo_cfg_path)
@@ -123,6 +116,7 @@ class Kardinal():
         for bbox in bboxs:
             x1, y1 = tuple(bbox[1:3].int())
             x2, y2 = tuple(bbox[3:5].int())
+            bbox = bbox.detach().cpu().numpy()
 
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
             img_crop = img[y1:y2, x1:x2]
@@ -133,6 +127,15 @@ class Kardinal():
             imgs.append(data)
 
         return imgs
+
+    def get_dist(self, tensor1, tensor2):
+        tensor1 = torch.tensor(tensor1).to(config.device)
+        tensor2 = torch.tensor(tensor2).to(config.device)
+        euclidean_distance = F.pairwise_distance(tensor1, tensor2)
+        d = float(euclidean_distance.item())
+        d = abs((1 / (1 + d)) - 1)
+
+        return d
 
     def detected(self, img, curr_frame):
         self.curr_databases.clear()
@@ -154,61 +157,55 @@ class Kardinal():
                 tensor_in = Variable(tensor_in).to(config.device)
 
                 with torch.no_grad():
-                    tensor_out = self.reid_model.forward_once(tensor_in).cpu()
-                    # print('tensor_out : ',tensor_out.type())
+                    tensor_out = self.reid_model.forward_once(tensor_in).cpu().numpy()
 
-                # if len(self.databases) < 1:
-                #     color = random.choice(self.colors)
-                #     person_id = PersonId(
-                #         label='Person '+str(i+1),
-                #         tensor=tensor_out,
-                #         color=color,
-                #         bbox=img_crop['bbox'],
-                #         frame=curr_frame
-                #     )
-                #     self.databases.append(person_id)
-                #     self.curr_databases.append(person_id)
-                # else:
-                #     min_dist = sys.float_info.max
-                #     sim_person = None
-                #     for person in self.databases:
-                #         dist = person.get_dist(tensor_out)
-                #         if curr_frame != person.get_frame and dist <= config.reid_thresh and dist < min_dist:
-                #             min_dist = dist
-                #             sim_person = person
-                #             # sim_person.set_label(person.get_label())
-                #             # sim_person.set_color(person.get_color())
-                #             sim_person.set_bbox(img_crop['bbox'])
-                #             sim_person.set_tensor(tensor_out)
-                #             sim_person.set_frame(curr_frame)
+                if len(self.databases) < 1:
+                    color = random.choice(self.colors)
+                    person_id = PersonId(
+                        label='Person '+str(i+1),
+                        tensor=tensor_out,
+                        color=color,
+                        bbox=img_crop['bbox'],
+                        frame=curr_frame
+                    )
+                    self.databases.append(person_id)
+                    self.curr_databases.append(person_id)
+                else:
+                    min_dist = sys.float_info.max
+                    sim_person = None
+                    for person in self.databases:
+                        dist = self.get_dist(person.get_tensor, tensor_out)
+                        if curr_frame != person.get_frame and dist <= config.reid_thresh and dist < min_dist:
+                            min_dist = dist
+                            sim_person = person
+                            # sim_person.set_label(person.get_label())
+                            # sim_person.set_color(person.get_color())
+                            sim_person.set_bbox(img_crop['bbox'])
+                            sim_person.set_tensor(tensor_out)
+                            sim_person.set_frame(curr_frame)
 
-                #     if sim_person is not None:
-                #         for person in self.databases:
-                #             if person.get_label() == sim_person.get_label():
-                #                 person = sim_person
-                #                 self.curr_databases.append(person)
-                #                 break
-                #     else:
-                #         color = random.choice(self.colors)
-                #         new_person = PersonId(
-                #             label='Person '+str(len(self.databases)+1),
-                #             tensor=tensor_out,
-                #             color=color,
-                #             bbox=img_crop['bbox'],
-                #             frame=curr_frame
-                #         )
-                #         self.databases.append(new_person)
-                #         self.curr_databases.append(new_person)
+                    if sim_person is not None:
+                        for person in self.databases:
+                            if person.get_label() == sim_person.get_label():
+                                person = sim_person
+                                self.curr_databases.append(person)
+                                break
+                    else:
+                        color = random.choice(self.colors)
+                        new_person = PersonId(
+                            label='Person '+str(len(self.databases)+1),
+                            tensor=tensor_out,
+                            color=color,
+                            bbox=img_crop['bbox'],
+                            frame=curr_frame
+                        )
+                        self.databases.append(new_person)
+                        self.curr_databases.append(new_person)
 
-            # for person in self.curr_databases:
-            #     self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
+            for person in self.curr_databases:
+                self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-
-        del img_tensors
-        del tensor_in
-        del tensor_out
-        del detections
         torch.cuda.empty_cache()
 
         return img
