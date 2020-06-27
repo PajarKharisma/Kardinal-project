@@ -19,14 +19,14 @@ import nnArch.basic_siamese as basic_siamese
 class config():
     yolo_cfg_path = 'config/yolov3.cfg'
     yolo_models_path = 'models/yolov3.weights'
-    reid_models_path = 'models/adaptive-spatial.pth'
+    reid_models_path = 'models/basic-siamese.pth'
     class_names_path = 'config/coco.names'
     colors_path = 'config/pallete'
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     cuda = True if torch.cuda.is_available() else False
 
-    reid_thresh = 0.45
+    reid_thresh = 0.5
     obj_thresh = 0.5
     nms_thresh = 0.4
 
@@ -81,7 +81,7 @@ class Kardinal():
         self.yolo_model.load_weights(config.yolo_models_path)
         self.yolo_model.to(config.device)
 
-        self.reid_model = adaptive.AdaptiveSpatialFeature()
+        self.reid_model = basic_siamese.BasicSiameseNetwork()
         self.reid_model.load_state_dict(torch.load(config.reid_models_path, map_location=config.device))
         self.reid_model.to(config.device)
         self.reid_model.eval()
@@ -145,7 +145,7 @@ class Kardinal():
             imgs = self.crop_img(img, detections)
 
             for i, img_crop in enumerate(imgs):
-                img_crop['img'] = cv2.resize(img_crop['img'], (60, 160))
+                img_crop['img'] = cv2.resize(img_crop['img'], (64, 128))
                 tensor_in = cv_image2tensor(img_crop['img'], self.input_size)
                 tensor_in = Variable(tensor_in).to(config.device)
 
