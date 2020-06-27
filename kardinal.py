@@ -152,8 +152,8 @@ class Kardinal():
                 tensor_in = cv_image2tensor(img_crop['img'], self.input_size)
                 tensor_in = Variable(tensor_in).to(config.device)
 
-                with torch.no_grad():
-                    tensor_out = self.reid_model.forward_once(tensor_in).cpu()
+                # with torch.no_grad():
+                tensor_out = self.reid_model.forward_once(tensor_in).cpu()
 
                 if len(self.databases) < 1:
                     color = random.choice(self.colors)
