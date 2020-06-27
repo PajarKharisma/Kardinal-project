@@ -141,6 +141,7 @@ class Kardinal():
         img_tensors = Variable(img_tensors).to(config.device)
 
         detections = self.yolo_model(img_tensors, config.cuda).cpu()
+        del img_tensors
         detections = process_result(detections, self.obj_thresh, self.nms_thresh)
 
         if len(detections) > 0:
@@ -204,7 +205,7 @@ class Kardinal():
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
-        del img_tensors
+        # del img_tensors
         del tensor_in
         del tensor_out
         del detections
