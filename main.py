@@ -9,7 +9,7 @@ start_time = time.time()
 sys.stdout.write('Process...\n')
 sys.stdout.flush()
 
-mode = 0
+mode = 1
 kardinal = krd.Kardinal()
 
 if mode == 0:
@@ -36,6 +36,7 @@ else:
         ret, frame = cap.read()
         if ret == True:
             curr_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
+            print('Frame : ',curr_frame)
             # img = kardinal.yolov3(frame)
             img = kardinal.detected(frame, curr_frame)
             out.write(img)
