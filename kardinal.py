@@ -82,11 +82,11 @@ class Kardinal():
     def __init__(self, obj_thresh=config.obj_thresh, nms_thresh=config.nms_thresh):
         self.yolo_model = darknet.Darknet(config.yolo_cfg_path)
         self.yolo_model.load_weights(config.yolo_models_path)
-        self.yolo_model.to('cpu')
+        self.yolo_model.to(config.device)
 
         self.reid_model = siamese.BstCnn()
         self.reid_model.load_state_dict(torch.load(config.reid_models_path, map_location=config.device))
-        self.reid_model.to(config.device)
+        self.reid_model.to('cpu')
         self.reid_model.eval()
 
         self.colors = pkl.load(open(config.colors_path, "rb"))
@@ -139,9 +139,9 @@ class Kardinal():
         torch.cuda.empty_cache()
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img_tensors = cv_image2tensor(img, self.input_size)
-        # img_tensors = Variable(img_tensors).to(config.device)
+        img_tensors = Variable(img_tensors).to(config.device)
 
-        detections = self.yolo_model(img_tensors, False).cpu()
+        detections = self.yolo_model(img_tensors, config.cuda).cpu()
         # print('detections : ',detections.type())
         detections = process_result(detections, self.obj_thresh, self.nms_thresh)
 
@@ -152,7 +152,7 @@ class Kardinal():
             for i, img_crop in enumerate(imgs):
                 img_crop['img'] = cv2.resize(img_crop['img'], config.img_size)
                 tensor_in = cv_image2tensor(img_crop['img'], self.input_size)
-                tensor_in = Variable(tensor_in).to(config.device)
+                # tensor_in = Variable(tensor_in).to(config.device)
 
                 with torch.no_grad():
                     tensor_out = self.reid_model.forward_once(tensor_in).cpu()
