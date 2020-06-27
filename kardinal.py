@@ -20,7 +20,7 @@ import nnArch.basic_siamese as basic_siamese
 class config():
     yolo_cfg_path = 'config/yolov3.cfg'
     yolo_models_path = 'models/yolov3.weights'
-    reid_models_path = 'models/vgg-cuhk02.pth'
+    reid_models_path = 'models/bst-new-cuhk02.pth'
     class_names_path = 'config/coco.names'
     colors_path = 'config/pallete'
 
@@ -84,7 +84,7 @@ class Kardinal():
         self.yolo_model.load_weights(config.yolo_models_path)
         self.yolo_model.to(config.device)
 
-        self.reid_model = vgg.get_model('vgg_mpkp', True)
+        self.reid_model = siamese.BstCnn()
         self.reid_model.load_state_dict(torch.load(config.reid_models_path, map_location=config.device))
         self.reid_model.to(config.device)
         self.reid_model.eval()
