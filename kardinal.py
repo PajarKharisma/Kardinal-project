@@ -147,7 +147,6 @@ class Kardinal():
         img_tensors = Variable(img_tensors).to(config.device)
 
         detections = self.yolo_model(img_tensors, config.cuda).cpu()
-        # del img_tensors
         detections = process_result(detections, self.obj_thresh, self.nms_thresh)
 
         if len(detections) > 0:
@@ -161,7 +160,6 @@ class Kardinal():
 
                 with torch.no_grad():
                     tensor_out = self.reid_model.forward_once(tensor_in).cpu().numpy()
-                    print('tensor_out : ',tensor_out)
 
                 if len(self.databases) < 1:
                     color = random.choice(self.colors)
@@ -178,7 +176,7 @@ class Kardinal():
                     min_dist = sys.float_info.max
                     sim_person = None
                     for person in self.databases:
-                        dist = self.get_dist(person.get_tensor, tensor_out)
+                        dist = self.get_dist(person.get_tensor(), tensor_out)
                         if curr_frame != person.get_frame and dist <= config.reid_thresh and dist < min_dist:
                             min_dist = dist
                             sim_person = person
