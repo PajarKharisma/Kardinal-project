@@ -26,7 +26,7 @@ class config():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     cuda = True if torch.cuda.is_available() else False
 
-    reid_thresh = 0.45
+    reid_thresh = 0.4
     obj_thresh = 0.5
     nms_thresh = 0.4
 
