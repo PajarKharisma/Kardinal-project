@@ -98,8 +98,11 @@ class Kardinal():
         return names
 
     def draw_bbox(self, img, bbox, color, label):
-        p1 = tuple(bbox[1:3].int())
-        p2 = tuple(bbox[3:5].int())
+        p1 = tuple(bbox[1:3])
+        p1 = tuple(int(p) for p in p1)
+
+        p2 = tuple(bbox[3:5])
+        p2 = tuple(int(p) for p in p2)
 
         # kotak orang
         cv2.rectangle(img, p1, p2, color, 2)
@@ -114,8 +117,8 @@ class Kardinal():
     def crop_img(self, img, bboxs):
         imgs = []
         for bbox in bboxs:
-            x1, y1 = tuple(bbox[1:3].int())
-            x2, y2 = tuple(bbox[3:5].int())
+            x1, y1 = tuple(bbox[1:3])
+            x2, y2 = tuple(bbox[3:5])
             bbox = bbox.detach().cpu().numpy()
 
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
