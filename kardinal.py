@@ -13,12 +13,13 @@ from util import process_result, load_images, resize_image, cv_image2tensor, tra
 import nnArch.darknet as darknet
 import nnArch.siamese as siamese
 import nnArch.multipart as multipart
+import nnArch.adaptive as adaptive
 import nnArch.basic_siamese as basic_siamese
 
 class config():
     yolo_cfg_path = 'config/yolov3.cfg'
     yolo_models_path = 'models/yolov3.weights'
-    reid_models_path = 'models/basic-siamese.pth'
+    reid_models_path = 'models/adaptive-spatial.pth'
     class_names_path = 'config/coco.names'
     colors_path = 'config/pallete'
 
@@ -80,7 +81,7 @@ class Kardinal():
         self.yolo_model.load_weights(config.yolo_models_path)
         self.yolo_model.to(config.device)
 
-        self.reid_model = basic_siamese.BasicSiameseNetwork()
+        self.reid_model = adaptive.AdaptiveSpatialFeature()
         self.reid_model.load_state_dict(torch.load(config.reid_models_path, map_location=config.device))
         self.reid_model.to(config.device)
         self.reid_model.eval()
