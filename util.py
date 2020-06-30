@@ -49,7 +49,7 @@ def process_result(detection, obj_threshhold, nms_threshhold):
 
     final_output = []
     for i,out in enumerate(output):
-        if out[5] > 0.85:
+        if out[5] > 0.9:
             final_output.append(out)
 
     final_output = torch.stack(final_output)
@@ -93,8 +93,9 @@ def load_images(impath):
     imgs = [cv2.imread(path) for path in imlist]
     return imlist, imgs
 
-def cv_image2tensor(img, size):
-    img = resize_image(img, size)
+def cv_image2tensor(img, size=None):
+    if size is not None:
+        img = resize_image(img, size)
     img = img[:, :, ::-1].transpose((2, 0, 1)).copy()
     img = torch.from_numpy(img).float() / 255.0
     img = [img]

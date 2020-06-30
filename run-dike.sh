@@ -9,4 +9,4 @@
 #SBATCH --time=20:00:00
 
 source .venv/bin/activate
-srun python3 main.py
+srun python3 status.py
