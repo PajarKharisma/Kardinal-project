@@ -96,6 +96,7 @@ def load_images(impath):
 def cv_image2tensor(img, size=None):
     if size is not None:
         img = resize_image(img, size)
+    # remove
     img = img[:, :, ::-1].transpose((2, 0, 1)).copy()
     img = torch.from_numpy(img).float() / 255.0
     img = [img]
