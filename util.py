@@ -1,4 +1,6 @@
 import torch
+import torchvision.transforms as transforms
+
 import os.path as osp
 import os
 import sys
@@ -93,12 +95,15 @@ def load_images(impath):
     imgs = [cv2.imread(path) for path in imlist]
     return imlist, imgs
 
-def cv_image2tensor(img, size=None):
+def cv_image2tensor(img, transform=None, size=None):
     if size is not None:
         img = resize_image(img, size)
     # remove
-    img = img[:, :, ::-1].transpose((2, 0, 1)).copy()
-    img = torch.from_numpy(img).float() / 255.0
+    if transform is not None:
+        img = transform(img)
+    else:
+        img = img[:, :, ::-1].transpose((2, 0, 1)).copy()
+        img = torch.from_numpy(img).float() / 255.0
     img = [img]
     img_tensors = torch.stack(img)
 
@@ -138,3 +143,16 @@ def transform_result(detections, imgs, input_size):
     detections[:, [2, 4]] = torch.min(detections[:, [2, 4]], img_dims[:, 0].unsqueeze(-1))
 
     return detections
+
+def load_reid_model(load_dir, model_arch, device):
+    checkpoint = torch.load(load_dir, map_location=device)
+    model = {}
+    model_arch.load_state_dict(checkpoint['state_dict'])
+    model_arch.to(device)
+    model_arch.eval()
+
+    model['model'] = model_arch
+    model['max_dist'] = checkpoint['max_dist']
+    model['threshold'] = checkpoint['threshold']
+
+    return model

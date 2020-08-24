@@ -1,6 +1,7 @@
 import sys
 import cv2
 import time
+import imutils
 import kardinal as krd
 import torchvision.transforms as transforms
 
@@ -15,12 +16,13 @@ kardinal = krd.Kardinal()
 if mode == 0:
     # trans = transforms.Compose([transforms.ToTensor()])
     img = cv2.imread('datatest/hasil.jpg')
+    img = imutils.resize(img, width=960)
     # img = trans(img)
     # print(img.shape)
     img = kardinal.yolov3(img)
-    cv2.imwrite('result.jpg', img)
-    # cv2.imshow('result', img)
-    # cv2.waitKey(0)
+    # cv2.imwrite('result.jpg', img)
+    cv2.imshow('result', img)
+    cv2.waitKey(0)
 
 else:
     cap = cv2.VideoCapture('datatest/hasil.mp4')

@@ -1,5 +1,6 @@
 import torch
 import torch.nn.functional as F
+import torchvision.transforms as transforms
 from torch.autograd import Variable
 
 import sys
@@ -8,30 +9,26 @@ import cv2
 import numpy as np
 import random
 import uuid
-from util import process_result, load_images, resize_image, cv_image2tensor, transform_result
+from util import process_result, load_images, resize_image, cv_image2tensor, transform_result, load_reid_model
 
 import nnArch.darknet as darknet
 import nnArch.siamese as siamese
-import nnArch.multipart as multipart
-import nnArch.adaptive as adaptive
-import nnArch.vgg as vgg
-import nnArch.basic_siamese as basic_siamese
 
 class config():
+    root_dir = os.getcwd()
     yolo_cfg_path = 'config/yolov3.cfg'
     yolo_models_path = 'models/yolov3.weights'
-    reid_models_path = 'models/bst-new-cuhk02.pth'
+    reid_models_path = 'models/re-id.pth'
     class_names_path = 'config/coco.names'
-    colors_path = 'config/pallete'
+    colors_path =  'config/pallete'
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     cuda = True if torch.cuda.is_available() else False
 
-    reid_thresh = 0.5
     obj_thresh = 0.5
     nms_thresh = 0.4
 
-    img_size = (60,160)
+    img_size = (60,128)
 
 class PersonId():
     def __init__(self, label='', tensor=None, color=None, bbox=None, frame=1):
@@ -77,10 +74,9 @@ class Kardinal():
         self.yolo_model.load_weights(config.yolo_models_path)
         self.yolo_model.to(config.device)
 
-        self.reid_model = siamese.BstCnn()
-        self.reid_model.load_state_dict(torch.load(config.reid_models_path, map_location=config.device))
-        self.reid_model.to(config.device)
-        self.reid_model.eval()
+        self.trans = transforms.Compose([transforms.ToTensor()])
+        reid_model_arch   = siamese.BstCnn()
+        self.reid_model = load_reid_model(config.reid_models_path, reid_model_arch, config.device)
 
         self.colors = pkl.load(open(config.colors_path, "rb"))
         self.classes = self.load_classes(config.class_names_path)
@@ -132,21 +128,17 @@ class Kardinal():
         return imgs
 
     def get_dist(self, input1, input2):
-        # print(input1)
-        # print(input2)
         tensor1 = torch.from_numpy(input1)
         tensor2 = torch.from_numpy(input2)
         
         euclidean_distance = F.pairwise_distance(tensor1, tensor2)
-        d = float(euclidean_distance.item())
-        d = abs((1 / (1 + d)) - 1)
-
-        return d
+        dist = float(euclidean_distance.item())
+        return (dist - 0) / (self.reid_model['max_dist'] - 0)
 
     def detected(self, img, curr_frame):
         self.curr_databases.clear()
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img_tensors = cv_image2tensor(img, self.input_size)
+        img_tensors = cv_image2tensor(img=img, transform=None, size=self.input_size)
         img_tensors = Variable(img_tensors).to(config.device)
 
         detections = self.yolo_model(img_tensors, config.cuda).cpu()
@@ -157,14 +149,14 @@ class Kardinal():
             imgs = self.crop_img(img, detections)
 
             for i, img_crop in enumerate(imgs):
-                # imgg = cv2.cvtColor(img_crop['img'], cv2.COLOR_RGB2BGR)
                 # cv2.imwrite('crop/'+str(uuid.uuid4().hex)+'.jpg', imgg)
+
                 img_crop['img'] = cv2.resize(img_crop['img'], config.img_size)
-                tensor_in = cv_image2tensor(img_crop['img'])
+                tensor_in = cv_image2tensor(img=img_crop['img'], transform=self.trans, size=None)
                 tensor_in = Variable(tensor_in).to(config.device)
 
                 with torch.no_grad():
-                    tensor_out = self.reid_model.forward_once(tensor_in).cpu().numpy()
+                    tensor_out = self.reid_model['model'].forward_once(tensor_in).cpu().numpy()
 
                 if len(self.databases) < 1:
                     color = random.choice(self.colors)
@@ -182,7 +174,7 @@ class Kardinal():
                     sim_person = None
                     for person in self.databases:
                         dist = self.get_dist(person.get_tensor(), tensor_out)
-                        if curr_frame != person.get_frame and dist <= config.reid_thresh and dist < min_dist:
+                        if curr_frame != person.get_frame and dist <= self.reid_model['threshold'] and dist < min_dist:
                             min_dist = dist
                             sim_person = person
                             # sim_person.set_label(person.get_label())
@@ -219,7 +211,9 @@ class Kardinal():
 
     def yolov3(self, img):
         # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img_tensors = cv_image2tensor(img, self.input_size)
+        # print(config.yolo_models_path)
+
+        img_tensors = cv_image2tensor(img, None, self.input_size)
         img_tensors = Variable(img_tensors).to(config.device)
 
         detections = self.yolo_model(img_tensors, config.cuda).cpu()
