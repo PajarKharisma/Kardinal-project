@@ -137,10 +137,9 @@ class Kardinal():
         return (dist - 0) / (self.reid_model['max_dist'] - 0)
 
     def detected(self, img, curr_frame):
-        
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         if curr_frame % 24 == 0:
             self.curr_databases.clear()
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             img_tensors = cv_image2tensor(img=img, transform=None, size=self.input_size)
             img_tensors = Variable(img_tensors).to(config.device)
 
@@ -204,8 +203,8 @@ class Kardinal():
                             self.databases.append(new_person)
                             self.curr_databases.append(new_person)
 
-            for person in self.curr_databases:
-                self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
+        for person in self.curr_databases:
+            self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         torch.cuda.empty_cache()
