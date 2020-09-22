@@ -153,6 +153,6 @@ def load_reid_model(load_dir, model_arch, device):
 
     model['model'] = model_arch
     model['max_dist'] = checkpoint['max_dist']
-    model['threshold'] = checkpoint['threshold'] + 0.1
+    model['threshold'] = checkpoint['threshold'] + 0.05
 
     return model
