@@ -166,7 +166,7 @@ class Kardinal():
 
                     if len(self.databases) < 1:
                         # color = random.choice(self.colors)
-                        color = (255,255,255)
+                        color = self.colors[self.count_person]
                         person_id = PersonId(
                             label='Person '+str(self.count_person + 1),
                             tensor=tensor_out,
@@ -174,6 +174,7 @@ class Kardinal():
                             bbox=img_crop['bbox'],
                             frame=curr_frame
                         )
+                        self.count_person += 1
                         self.databases.append(person_id)
                         self.curr_databases.append(person_id)
                     else:
@@ -198,7 +199,7 @@ class Kardinal():
                                     break
                         else:
                             # color = random.choice(self.colors)
-                            color = (255,255,255)
+                            color = self.colors[self.count_person]
                             new_person = PersonId(
                                 # label='Person '+str(len(self.databases)+1),
                                 label='Person '+str(self.count_person+1),
