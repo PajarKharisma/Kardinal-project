@@ -79,6 +79,7 @@ class Kardinal():
         reid_model_arch   = siamese.BstCnn()
         self.reid_model = load_reid_model(config.reid_models_path, reid_model_arch, config.device)
         self.filter_kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+        self.count_person = 0
 
         self.colors = pkl.load(open(config.colors_path, "rb"))
         self.classes = self.load_classes(config.class_names_path)
@@ -140,6 +141,7 @@ class Kardinal():
     def detected(self, img, curr_frame):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         if curr_frame % 12 == 0:
+            self.databases.clear()
             self.curr_databases.clear()
             img_tensors = cv_image2tensor(img=img, transform=None, size=self.input_size)
             img_tensors = Variable(img_tensors).to(config.device)
@@ -196,12 +198,14 @@ class Kardinal():
                         else:
                             color = random.choice(self.colors)
                             new_person = PersonId(
-                                label='Person '+str(len(self.databases)+1),
+                                # label='Person '+str(len(self.databases)+1),
+                                label='Person '+str(self.count_person)+1),
                                 tensor=tensor_out,
                                 color=color,
                                 bbox=img_crop['bbox'],
                                 frame=curr_frame
                             )
+                            self.count_person += 1
                             self.databases.append(new_person)
                             self.curr_databases.append(new_person)
 
