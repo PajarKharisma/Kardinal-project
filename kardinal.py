@@ -141,7 +141,6 @@ class Kardinal():
     def detected(self, img, curr_frame):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         if curr_frame % 12 == 0:
-            self.databases.clear()
             self.curr_databases.clear()
             img_tensors = cv_image2tensor(img=img, transform=None, size=self.input_size)
             img_tensors = Variable(img_tensors).to(config.device)
@@ -166,7 +165,7 @@ class Kardinal():
 
                     if len(self.databases) < 1:
                         # color = random.choice(self.colors)
-                        color = self.colors[self.count_person]
+                        color = self.colors[self.count_person % len(self.colors)]
                         person_id = PersonId(
                             label='Person '+str(self.count_person + 1),
                             tensor=tensor_out,
@@ -199,7 +198,7 @@ class Kardinal():
                                     break
                         else:
                             # color = random.choice(self.colors)
-                            color = self.colors[self.count_person]
+                            color = self.colors[self.count_person % len(self.colors)]
                             new_person = PersonId(
                                 # label='Person '+str(len(self.databases)+1),
                                 label='Person '+str(self.count_person+1),
@@ -211,7 +210,8 @@ class Kardinal():
                             self.count_person += 1
                             self.databases.append(new_person)
                             self.curr_databases.append(new_person)
-
+            else:
+                self.databases.clear()
         for person in self.curr_databases:
             self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
 
