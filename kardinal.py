@@ -165,9 +165,10 @@ class Kardinal():
                         tensor_out = self.reid_model['model'].forward_once(tensor_in).cpu().numpy()
 
                     if len(self.databases) < 1:
-                        color = random.choice(self.colors)
+                        # color = random.choice(self.colors)
+                        color = (255,255,255)
                         person_id = PersonId(
-                            label='Person '+str(i+1),
+                            label='Person '+str(self.count_person + 1),
                             tensor=tensor_out,
                             color=color,
                             bbox=img_crop['bbox'],
@@ -196,7 +197,8 @@ class Kardinal():
                                     self.curr_databases.append(person)
                                     break
                         else:
-                            color = random.choice(self.colors)
+                            # color = random.choice(self.colors)
+                            color = (255,255,255)
                             new_person = PersonId(
                                 # label='Person '+str(len(self.databases)+1),
                                 label='Person '+str(self.count_person+1),
