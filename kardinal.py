@@ -138,7 +138,7 @@ class Kardinal():
 
     def detected(self, img, curr_frame):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        if curr_frame % 10 == 0:
+        if curr_frame % 12 == 0:
             self.curr_databases.clear()
             img_tensors = cv_image2tensor(img=img, transform=None, size=self.input_size)
             img_tensors = Variable(img_tensors).to(config.device)
