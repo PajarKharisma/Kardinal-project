@@ -29,7 +29,7 @@ class config():
     obj_thresh = 0.5
     nms_thresh = 0.4
 
-    img_size = (60,128)
+    img_size = (64,128)
 
 class PersonId():
     def __init__(self, label='', tensor=None, color=None, bbox=None, frame=1):
@@ -204,8 +204,8 @@ class Kardinal():
                             self.databases.append(new_person)
                             self.curr_databases.append(new_person)
 
-        for person in self.curr_databases:
-            self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
+            for person in self.curr_databases:
+                self.draw_bbox(img, person.get_bbox() , person.get_color(), person.get_label())
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         torch.cuda.empty_cache()
