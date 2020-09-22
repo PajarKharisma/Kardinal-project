@@ -78,6 +78,7 @@ class Kardinal():
         self.trans = transforms.Compose([transforms.ToTensor()])
         reid_model_arch   = siamese.BstCnn()
         self.reid_model = load_reid_model(config.reid_models_path, reid_model_arch, config.device)
+        self.filter_kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
 
         self.colors = pkl.load(open(config.colors_path, "rb"))
         self.classes = self.load_classes(config.class_names_path)
@@ -154,6 +155,7 @@ class Kardinal():
                     # cv2.imwrite('crop/'+str(uuid.uuid4().hex)+'.jpg', imgg)
 
                     img_crop['img'] = cv2.resize(img_crop['img'], config.img_size)
+                    img_crop['img'] = cv2.filter2D(img_crop['img'], -1, self.filter_kernel)
                     tensor_in = cv_image2tensor(img=img_crop['img'], transform=self.trans, size=None)
                     tensor_in = Variable(tensor_in).to(config.device)
 
