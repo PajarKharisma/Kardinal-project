@@ -199,7 +199,7 @@ class Kardinal():
                             color = random.choice(self.colors)
                             new_person = PersonId(
                                 # label='Person '+str(len(self.databases)+1),
-                                label='Person '+str(self.count_person)+1),
+                                label='Person '+str(self.count_person+1),
                                 tensor=tensor_out,
                                 color=color,
                                 bbox=img_crop['bbox'],
