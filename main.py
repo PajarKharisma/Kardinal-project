@@ -25,7 +25,7 @@ if mode == 0:
     cv2.waitKey(0)
 
 else:
-    cap = cv2.VideoCapture('datatest/datatest-1.mp4')
+    cap = cv2.VideoCapture('datatest/hasil.mp4')
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
 

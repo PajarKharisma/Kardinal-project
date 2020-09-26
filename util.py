@@ -49,16 +49,17 @@ def process_result(detection, obj_threshhold, nms_threshhold):
                 bboxes_cls = torch.cat((batch_idx_add, bboxes_cls), dim=1)
                 output = torch.cat((output, bboxes_cls))
 
-    final_output = []
-    for i,out in enumerate(output):
-        if out[5] > 0.92:
-            final_output.append(out)
+    # final_output = []
+    # for i,out in enumerate(output):
+    #     if out[5] > 0.9:
+    #         final_output.append(out)
 
-    if len(final_output) > 0:
-        final_output = torch.stack(final_output)
-    else:
-        final_output = torch.tensor([])
-    return final_output
+    # if len(final_output) > 0:
+    #     final_output = torch.stack(final_output)
+    # else:
+    #     final_output = torch.tensor([])
+    
+    return output
 
 def to_corner(bboxes):
     newbboxes = bboxes.clone()

@@ -71,6 +71,7 @@ class PersonId():
 
 class Kardinal():
     def __init__(self, obj_thresh=config.obj_thresh, nms_thresh=config.nms_thresh):
+        print('Processed by {}'.format(config.device))
         self.yolo_model = darknet.Darknet(config.yolo_cfg_path)
         self.yolo_model.load_weights(config.yolo_models_path)
         self.yolo_model.to(config.device)
@@ -248,6 +249,6 @@ class Kardinal():
             self.count_prev = 0
         
         text = 'People count : {}'.format(self.people_count)
-        img = cv2.putText(img, text, (0,30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255,255,255), 2, cv2.LINE_AA)
+        img = cv2.putText(img, text, (0,30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,0,0), 2, cv2.LINE_AA)
 
         return img
