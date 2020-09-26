@@ -26,7 +26,7 @@ class config():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     cuda = True if torch.cuda.is_available() else False
 
-    obj_thresh = 0.5
+    obj_thresh = 0.9
     nms_thresh = 0.4
 
     img_size = (64,128)
