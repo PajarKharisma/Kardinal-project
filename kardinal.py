@@ -26,7 +26,7 @@ class config():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     cuda = True if torch.cuda.is_available() else False
 
-    obj_thresh = 0.9
+    obj_thresh = 0.92
     nms_thresh = 0.4
 
     img_size = (64,128)
@@ -227,7 +227,7 @@ class Kardinal():
 
         return img
 
-    def people_counting(self, img):
+    def people_counting(self, img, curr_frame):
         # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         # print(config.yolo_models_path)
 
@@ -235,17 +235,18 @@ class Kardinal():
         img_tensors = Variable(img_tensors).to(config.device)
 
         detections = self.yolo_model(img_tensors, config.cuda).cpu()
-        detections = process_result(detections, self.obj_thresh, self.nms_thresh)
+        detections = process_result(detection=detections, obj_threshhold=0.8, nms_threshhold=self.nms_thresh)
 
         if len(detections) > 0:
-            add_people = len(detections) - self.count_prev if len(detections) > self.count_prev else 0
-            self.people_count += add_people
-            self.count_prev = len(detections)
+            if curr_frame % 10 == 0:
+                add_people = len(detections) - self.count_prev if len(detections) > self.count_prev else 0
+                self.people_count += add_people
+                self.count_prev = len(detections)
 
             detections = transform_result(detections, [img], self.input_size)
             for detection in detections:
                 self.draw_bbox(img, detection, (255,255,255), 'orang')
-        else:
+        elif len(detections) < 1 and curr_frame % 10 == 0:
             self.count_prev = 0
         
         text = 'People count : {}'.format(self.people_count)

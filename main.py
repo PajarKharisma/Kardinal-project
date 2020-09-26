@@ -25,7 +25,7 @@ if mode == 0:
     cv2.waitKey(0)
 
 else:
-    cap = cv2.VideoCapture('datatest/hasil.mp4')
+    cap = cv2.VideoCapture('datatest/datatest-1.mp4')
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
 
@@ -40,7 +40,7 @@ else:
             curr_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
             sys.stdout.write('Frame : '+str(curr_frame)+'\n')
             sys.stdout.flush()
-            img = kardinal.people_counting(frame)
+            img = kardinal.people_counting(frame, curr_frame)
             # img = kardinal.detected(frame, curr_frame)
             out.write(img)
             # cv2.imshow('Frame', img)
