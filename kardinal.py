@@ -235,7 +235,7 @@ class Kardinal():
         img_tensors = Variable(img_tensors).to(config.device)
 
         detections = self.yolo_model(img_tensors, config.cuda).cpu()
-        detections = process_result(detection=detections, obj_threshhold=0.8, nms_threshhold=self.nms_thresh)
+        detections = process_result(detection=detections, obj_threshhold=0.85, nms_threshhold=self.nms_thresh)
 
         if len(detections) > 0:
             if curr_frame % 10 == 0:
