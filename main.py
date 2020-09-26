@@ -40,10 +40,10 @@ else:
             curr_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
             sys.stdout.write('Frame : '+str(curr_frame)+'\n')
             sys.stdout.flush()
-            # img = kardinal.yolov3(frame)
-            img = kardinal.detected(frame, curr_frame)
-            out.write(img)
-            # cv2.imshow('Frame', img)
+            img = kardinal.people_counting(frame)
+            # img = kardinal.detected(frame, curr_frame)
+            # out.write(img)
+            cv2.imshow('Frame', img)
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
         else: 

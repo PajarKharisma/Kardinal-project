@@ -91,6 +91,9 @@ class Kardinal():
         self.databases = []
         self.curr_databases = []
 
+        self.people_count = 0
+        self.count_prev = 0
+
     def load_classes(self, namesfile):
         fp = open(namesfile, "r")
         names = fp.read().split("\n")[:-1]
@@ -112,6 +115,9 @@ class Kardinal():
         # kotak text
         cv2.rectangle(img, p3, p4, color, -1)
         cv2.putText(img, label, p1, cv2.FONT_HERSHEY_SIMPLEX, 1, [0, 0, 0], 1)
+
+    def draw_text(self, img, txt):
+        pass
 
     def crop_img(self, img, bboxs):
         imgs = []
@@ -220,7 +226,7 @@ class Kardinal():
 
         return img
 
-    def yolov3(self, img):
+    def people_counting(self, img):
         # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         # print(config.yolo_models_path)
 
@@ -231,8 +237,17 @@ class Kardinal():
         detections = process_result(detections, self.obj_thresh, self.nms_thresh)
 
         if len(detections) > 0:
+            add_people = len(detections) - self.count_prev if len(detections) > self.count_prev else 0
+            self.people_count += add_people
+            self.count_prev = len(detections)
+
             detections = transform_result(detections, [img], self.input_size)
             for detection in detections:
                 self.draw_bbox(img, detection, (255,255,255), 'orang')
+        else:
+            self.count_prev = 0
         
+        text = 'People count : {}'.format(self.people_count)
+        img = cv2.putText(img, text, (0,30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255,255,255), 2, cv2.LINE_AA)
+
         return img
